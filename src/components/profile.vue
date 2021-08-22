@@ -6,13 +6,14 @@
     @confirm="confirm"
     >
       <div class="profile-container">
-        <div class="profile-sub flex">
+        <div class="profile-sub flex flex-col">
           <section 
           v-for="val in profile"
           :key="val"
           :class="{
             'profile-item': true,
             'flex': true,
+            'mb-4': true,
             'justify-center': true, 
             'items-center': true,
             'overflow-ellipsis': true,

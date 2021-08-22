@@ -2,15 +2,35 @@
   "name": "clash-frontend-linux",
   "version": "0.0.0",
   "main": "main.js",
+  "homepage": "https://github.com/SimonWann/ClashForLinux",
+  "author": {
+    "name": "Simooo",
+    "email": "simooo@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/SimonWann/ClashForLinux"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "electron:start": "electron ."
+    "electron:start": "electron .",
+    "electron:build": "electron-builder build",
+    "electron:build:linux": "electron-builder build --linux pacman"
+  },
+  "linux": {
+    "target": "pacman",
+    "category": "Utility"
+  },
+  "build": {
+    "appId": "top.suzzz",
+    "productName": "clashForLinux",
+    "copyright": "Copyright © year Simooo"
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.3.5",
     "axios": "^0.21.1",
+    "express": "^4.17.1",
     "vue": "^3.0.5"
   },
   "devDependencies": {
@@ -18,6 +38,7 @@
     "@vue/compiler-sfc": "^3.0.5",
     "autoprefixer": "^10.3.1",
     "electron": "^13.1.9",
+    "electron-builder": "^22.11.7",
     "postcss": "^8.3.6",
     "tailwindcss": "^2.2.7",
     "vite": "^2.4.4"

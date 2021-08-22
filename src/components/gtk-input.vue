@@ -10,6 +10,7 @@
     border-gray-900
     overflow-hidden
     focus:border-green-500
+    outline-none
     " 
     type="text" 
     v-model="value"

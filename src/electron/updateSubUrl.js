@@ -6,8 +6,8 @@ const path = require('path')
 
 async function update (str) {
   if(typeof(str) !== 'string') throw Error('Input type shoul be string')
-  fs.appendFile(path.join(__dirname, '../../clash/profileUrl'), str, (err) => {
-    console.log(err)
+  fs.appendFile(path.join(__dirname, '../../clash/profileUrl'), `\n${str}`, (err) => {
+    err?console.log({err}):'ok'
   })
   let result
   try {

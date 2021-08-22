@@ -11,6 +11,7 @@
   hover:bg-gray-400
   active:bg-gray-700
   transition-all
+  outline-none
   ">
     <div class="gtk-button-sub-contai">
       <slot></slot>

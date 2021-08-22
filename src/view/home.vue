@@ -56,6 +56,7 @@
             </gtk-button>
             <gtk-button
             class="ml-4"
+            @click="updateProfile"
             >
                 <transfer-data :fill="'#fff'"
                 :size="'1.2rem'"
@@ -69,21 +70,67 @@
             
         <main 
         class="
-        proxy-container
+        provider-contaienr
+        h-screen
         w-full
-        grid
-        grid-cols-2
-        pt-4
-        justify-items-center
         ">
-            <proxy-node-card
-            :item="val"
-            :key="key"
-            @click="pickCard(key)"
-            :isActive="dataIndex === key"
-            :delayCnt="delayCnt"
-            v-for="(val,key) in proxiesItems.proxies"
-            ></proxy-node-card>
+            <div 
+            class="
+            proxy-group-container
+            w-full
+            flex
+            flex-col
+            overflow-hidden
+            cursor-pointer
+            transition-all
+            duration-500
+            "
+            :style="{
+                height: val.isShow?'auto':'4rem',
+                }"
+            v-for="(val, key1) in renderProviders"
+            :key="key1"
+            >
+                <h1
+                class="
+                text-gray-800
+                text-lg
+                mx-3
+                px-4
+                py-2
+                my-4
+                font-bold	
+                border
+                border-gray-900
+                rounded
+                bg-gray-300
+                hover:bg-gray-200
+                transition-all
+                "
+                
+                @click="toggleList(key1)"
+                >{{val.name}}</h1>
+                <section
+                class="
+                width-full
+                grid
+                grid-cols-2
+                items-center
+                place-items-center
+                "
+                >
+                    <proxy-node-card
+                    class="
+                    "
+                    :item="val2"
+                    :key="key2"
+                    @click="pickCard(key1, key2, val2)"
+                    :isActive="dataIndex === key2 && dataProvider === key1"
+                    :delayCnt="delayCnt"
+                    v-for="(val2,key2) in val.proxies"
+                    ></proxy-node-card>
+                </section>
+            </div>
         </main>
         <profile
         :isVisible="profileVisble"
@@ -93,7 +140,7 @@
 </template>
 
 <script>
-import { ref,onMounted,inject } from 'vue'
+import { ref,onMounted,inject, computed } from 'vue'
 import api from '../apiMap/api'
 import proxyNodeCard from '../components/proxy-node-card.vue'
 import {SpeedOne, LinkOne, TransferData, DataServer} from '@icon-park/vue-next';
@@ -123,6 +170,7 @@ export default {
         const subUrl = ref(undefined)
         const $axios = inject('$axios')
         const dataIndex = ref()
+        const dataProvider = ref()
         const confText = ref('Subscript URL:')
         const profileVisble = ref(false)
         const subError = ref(undefined)
@@ -133,11 +181,20 @@ export default {
         function closeSubConfVisible() {
             subConfVisible.value = false
         }
+        async function updateProfile() {
+            await window.ipcRenderer.invoke('updateProfile')
+        }
         function openProfile() {
             profileVisble.value = true
         }
         function closeProfile() {
             profileVisble.value = false
+        }
+        function toggleList(key1) {
+            if(!proxiesMenu.value.providers[key1].isShow) {
+                proxiesMenu.value.providers[key1].isShow = false
+            }
+            proxiesMenu.value.providers[key1].isShow = !proxiesMenu.value.providers[key1].isShow
         }
         async function getVersion() {
             return await getData(api.version)
@@ -157,7 +214,11 @@ export default {
             console.log('click')
             delayCnt.value++
         }
+        const renderProviders = computed(() => {
+            return proxiesMenu.value.providers ?? {} 
+        })
         async function updateHandle() {
+            // update subscripe config method
             const data = {name: 'subUrl', value: subUrl.value}
             let result = await window.ipcRenderer.invoke('updateSub', JSON.stringify(data))
             if(result != 200) {
@@ -169,8 +230,16 @@ export default {
             }
             closeSubConfVisible()
         }
-        function pickCard(val) {
+        function pickCard(key, val, val2) {
             dataIndex.value = val
+            dataProvider.value = key
+            $axios({
+                url: `/proxies/${encodeURIComponent(key)}`,
+                method: 'put',
+                data: {
+                    name: val2.name
+                }
+            })
         }
         onMounted(async () => {
             try{
@@ -187,6 +256,7 @@ export default {
             proxiesItems,
             proxiesMenu,
             dataIndex,
+            dataProvider,
             pickCard,
             getDelayAll,
             delayCnt,
@@ -199,28 +269,30 @@ export default {
             subError,
             profileVisble,
             openProfile,
-            closeProfile
+            closeProfile,
+            renderProviders,
+            toggleList,
+            updateProfile
         }
     }
 }
 </script>
 
 <style>
-.proxy-container{
-    width: 45rem;
+.provider-contaienr{
     overflow-y: auto;
 }
 .home{
     
 }
 
-.proxy-container::-webkit-scrollbar{
+.provider-contaienr::-webkit-scrollbar{
     width: 0.6rem;
 }
-.proxy-container::-webkit-scrollbar-track{
+.provider-contaienr::-webkit-scrollbar-track{
     
 }
-.proxy-container::-webkit-scrollbar-thumb{
+.provider-contaienr::-webkit-scrollbar-thumb{
     background: rgba(75, 85, 99, 1);
     border-width: 0;
     border-radius:0.3rem;
